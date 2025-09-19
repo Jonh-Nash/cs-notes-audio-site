@@ -1,0 +1,7 @@
+node_modules/
+.out/
+out/
+.next/
+.DS_Store
+.env*
+public/data/*.json
