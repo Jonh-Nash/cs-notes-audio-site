@@ -2,21 +2,35 @@
 import { useMemo, useState } from "react";
 import MiniSearch from "minisearch";
 import Link from "next/link";
-import TagBadge from "./TagBadge";
+import CategoryBadge from "./CategoryBadge";
 
 type Doc = {
-  id: string; slug: string; title: string; tags: string[]; keywords: string[]; audio: string[]; content: string;
+  id: string;
+  slug: string;
+  title: string;
+  categories: string[];
+  keywords: string[];
+  audio: string[];
+  content: string;
 };
 
 export default function SearchBox({ docs }: { docs: Doc[] }) {
   const [q, setQ] = useState("");
-  const [tag, setTag] = useState<string | null>(null);
+  const [category, setCategory] = useState<string | null>(null);
 
   const mini = useMemo(() => {
     const ms = new MiniSearch<Doc>({
-      fields: ["title", "content", "tags", "keywords"],
-      storeFields: ["id", "slug", "title", "tags", "keywords", "audio", "content"],
-      searchOptions: { fuzzy: 0.2, prefix: true }
+      fields: ["title", "content", "categories", "keywords"],
+      storeFields: [
+        "id",
+        "slug",
+        "title",
+        "categories",
+        "keywords",
+        "audio",
+        "content",
+      ],
+      searchOptions: { fuzzy: 0.2, prefix: true },
     });
     ms.addAll(docs);
     return ms;
@@ -24,32 +38,38 @@ export default function SearchBox({ docs }: { docs: Doc[] }) {
 
   const docsById = useMemo(() => {
     const m = new Map<string, Doc>();
-    docs.forEach(d => m.set(d.id, d));
+    docs.forEach((d) => m.set(d.id, d));
     return m;
   }, [docs]);
 
-  const tags = useMemo(() => {
+  const categories = useMemo(() => {
     const map = new Map<string, number>();
-    docs.forEach(d => d.tags.forEach(t => map.set(t, (map.get(t) || 0) + 1)));
+    docs.forEach((d) =>
+      d.categories.forEach((t) => map.set(t, (map.get(t) || 0) + 1))
+    );
     return Array.from(map.entries()).sort();
   }, [docs]);
 
   const results = useMemo(() => {
     let resDocs: Doc[] = [];
-    if (!q && !tag) return resDocs;
+    if (!q && !category) return resDocs;
     if (q) {
-      resDocs = (mini.search(q) as any[]).map(r => docsById.get(String(r.id))).filter(Boolean) as Doc[];
+      resDocs = (mini.search(q) as any[])
+        .map((r) => docsById.get(String(r.id)))
+        .filter(Boolean) as Doc[];
     } else {
       resDocs = docs.slice();
     }
-    if (tag) {
-      resDocs = resDocs.filter(d => d.tags.includes(tag));
+    if (category) {
+      resDocs = resDocs.filter((d) => d.categories.includes(category));
     }
     // unique by id
     const seen = new Set<string>();
-    resDocs = resDocs.filter(d => (seen.has(d.id) ? false : (seen.add(d.id), true)));
+    resDocs = resDocs.filter((d) =>
+      seen.has(d.id) ? false : (seen.add(d.id), true)
+    );
     return resDocs;
-  }, [q, tag, mini, docs, docsById]);
+  }, [q, category, mini, docs, docsById]);
 
   return (
     <div>
@@ -62,18 +82,30 @@ export default function SearchBox({ docs }: { docs: Doc[] }) {
             const val = e.target.value;
             setQ(val);
             if (val.startsWith("#")) {
-              setTag(val.slice(1));
+              setCategory(val.slice(1));
             }
           }}
         />
-        <button className="border rounded px-3" onClick={() => { setQ(""); setTag(null); }}>クリア</button>
+        <button
+          className="border rounded px-3"
+          onClick={() => {
+            setQ("");
+            setCategory(null);
+          }}
+        >
+          クリア
+        </button>
       </div>
 
       <div className="mb-4 flex flex-wrap gap-2">
-        {tags.map(([t, n]) => (
-          <button key={t}
-            onClick={() => setTag(tag === t ? null : t)}
-            className={`text-xs px-2 py-1 rounded border ${tag === t ? "bg-gray-200 dark:bg-gray-700" : ""}`}>
+        {categories.map(([t, n]) => (
+          <button
+            key={t}
+            onClick={() => setCategory(category === t ? null : t)}
+            className={`text-xs px-2 py-1 rounded border ${
+              category === t ? "bg-gray-200 dark:bg-gray-700" : ""
+            }`}
+          >
             #{t} <span className="opacity-60">({n})</span>
           </button>
         ))}
@@ -81,16 +113,29 @@ export default function SearchBox({ docs }: { docs: Doc[] }) {
 
       {results.length > 0 ? (
         <ul className="space-y-4">
-          {results.map(r => (
+          {results.map((r) => (
             <li key={r.id} className="border rounded p-3">
-              <Link href={`/topics/${r.slug}`} className="font-medium underline">{r.title}</Link>
-              <div className="mt-2">{r.tags.map(t => <TagBadge key={t} tag={t} />)}</div>
-              <p className="text-sm opacity-80 mt-2 line-clamp-2">{r.content}</p>
+              <Link
+                href={`/topics/${r.slug}`}
+                className="font-medium underline"
+              >
+                {r.title}
+              </Link>
+              <div className="mt-2">
+                {r.categories.map((t) => (
+                  <CategoryBadge key={t} category={t} />
+                ))}
+              </div>
+              <p className="text-sm opacity-80 mt-2 line-clamp-2">
+                {r.content}
+              </p>
             </li>
           ))}
         </ul>
+      ) : q || category ? (
+        <p className="opacity-70">一致なし</p>
       ) : (
-        (q || tag) ? <p className="opacity-70">一致なし</p> : <p className="opacity-60">キーワードで検索、またはタグを選択</p>
+        <p className="opacity-60">キーワードで検索、またはカテゴリを選択</p>
       )}
     </div>
   );

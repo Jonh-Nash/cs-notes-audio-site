@@ -1,6 +1,6 @@
 ---
 title: "データ構造入門"
-tags: ["data-structure"]
+categories: ["data-structure"]
 keywords: ["スタック", "キュー", "ツリー", "グラフ"]
 audio:
   - "/audio/ds/stack_intro.mp3"

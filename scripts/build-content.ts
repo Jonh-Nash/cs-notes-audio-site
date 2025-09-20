@@ -9,7 +9,7 @@ import stripMarkdown from "strip-markdown";
 type TopicMeta = {
   slug: string;
   title: string;
-  tags: string[];
+  categories: string[];
   keywords: string[];
   audio: string[];
 };
@@ -45,7 +45,10 @@ async function main() {
 
     const slug = file.replace(/\.md$/, "");
     const title = String(data.title || slug);
-    const tags = Array.isArray(data.tags) ? data.tags.map(String) : [];
+    // categories only (no backward-compat)
+    const categories = Array.isArray((data as any).categories)
+      ? (data as any).categories.map(String)
+      : [];
     const keywords = Array.isArray(data.keywords)
       ? data.keywords.map(String)
       : [];
@@ -53,7 +56,7 @@ async function main() {
 
     const plain = await markdownToPlain(content);
 
-    const meta: TopicMeta = { slug, title, tags, keywords, audio };
+    const meta: TopicMeta = { slug, title, categories, keywords, audio };
     const doc: SearchDoc = { id: slug, ...meta, content: plain };
 
     topics.push(meta);

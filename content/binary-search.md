@@ -1,6 +1,6 @@
 ---
 title: "二分探索 (Binary Search)"
-tags: ["algorithm", "search"]
+categories: ["algorithm", "search"]
 keywords: ["二分探索", "binary search", "探索"]
 audio:
   - "/audio/algorithms/binary_search_1.mp3"
