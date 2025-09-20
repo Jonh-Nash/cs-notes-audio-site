@@ -14,8 +14,7 @@ categories:
   ]
 keywords: ["冪等性", "データベース", "その他"]
 audio:
-  - "/audio/sample/sample_1.mp3"
-  - "/audio/sample/sample_2.mp3"
+  - "/audio/sample/speech_20250920164227343.mp3"
 ---
 
 こちらはサンプルページです。
