@@ -27,20 +27,35 @@ export default function KeywordsPage({ topics }: { topics: TopicMeta[] }) {
     a[0].localeCompare(b[0])
   );
 
-  const jpLetters =
-    "あいうえおかきくけこさしすせそたちつてとなにぬねのはひふへほまみむめもやゆよらりるれろわをん".split(
-      ""
-    );
+  // ひらがなを行でグループ化（濁音・半濁音は清音に統合）
+  const jpGyou = [
+    { name: "あ行", letters: ["あ", "い", "う", "え", "お"] },
+    { name: "か行", letters: ["か", "き", "く", "け", "こ"] },
+    { name: "さ行", letters: ["さ", "し", "す", "せ", "そ"] },
+    { name: "た行", letters: ["た", "ち", "つ", "て", "と"] },
+    { name: "な行", letters: ["な", "に", "ぬ", "ね", "の"] },
+    { name: "は行", letters: ["は", "ひ", "ふ", "へ", "ほ"] },
+    { name: "ま行", letters: ["ま", "み", "む", "め", "も"] },
+    { name: "や行", letters: ["や", "ゆ", "よ"] },
+    { name: "ら行", letters: ["ら", "り", "る", "れ", "ろ"] },
+    { name: "わ行", letters: ["わ", "を", "ん"] },
+  ];
+
+  // 表示用の全文字リスト（既存のロジックとの互換性のため）
+  const jpLetters = jpGyou.flatMap((gyou) => gyou.letters);
   const enLetters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
 
   const groupBy = (isJP: boolean) => {
     const group = new Map<string, [string, TopicMeta[]][]>();
     entries.forEach(([k, arr]) => {
       const init = initialCategory(k);
-      const idx = isJP ? init.jp || "その他" : init.en || "Others";
-      const cur = group.get(idx) || [];
-      cur.push([k, arr]);
-      group.set(idx, cur);
+      const idx = isJP ? init.jp : init.en;
+      // 分類できたもののみを含める（未分類は除外）
+      if (idx) {
+        const cur = group.get(idx) || [];
+        cur.push([k, arr]);
+        group.set(idx, cur);
+      }
     });
     return group;
   };
@@ -56,20 +71,26 @@ export default function KeywordsPage({ topics }: { topics: TopicMeta[] }) {
         id="character-navigation"
         className="sticky top-0 z-10 bg-white/90 dark:bg-gray-900/90 backdrop-blur border-y py-2 mb-4 keyboard-safe-area"
       >
-        <div className="text-sm mb-1">日本語</div>
-        <div className="flex flex-wrap gap-2">
-          {jpLetters.map((l) => (
-            <a
-              key={l}
-              href={`#jp-${l}`}
-              className="px-2 py-1 border rounded text-sm"
-            >
-              {l}
-            </a>
+        <div className="text-sm mb-2">日本語</div>
+        <div className="space-y-2">
+          {jpGyou.map((gyou) => (
+            <div key={gyou.name} className="flex flex-wrap items-center gap-2">
+              <div className="text-xs text-gray-600 dark:text-gray-400 w-8 flex-shrink-0">
+                {gyou.name}
+              </div>
+              <div className="flex flex-wrap gap-1">
+                {gyou.letters.map((l) => (
+                  <a
+                    key={l}
+                    href={`#jp-${l}`}
+                    className="px-2 py-1 border rounded text-sm hover:bg-gray-100 dark:hover:bg-gray-800"
+                  >
+                    {l}
+                  </a>
+                ))}
+              </div>
+            </div>
           ))}
-          <a href="#jp-その他" className="px-2 py-1 border rounded text-sm">
-            その他
-          </a>
         </div>
         <div className="text-sm mt-3 mb-1">English</div>
         <div className="flex flex-wrap gap-2">
@@ -82,14 +103,11 @@ export default function KeywordsPage({ topics }: { topics: TopicMeta[] }) {
               {l}
             </a>
           ))}
-          <a href="#en-Others" className="px-2 py-1 border rounded text-sm">
-            Others
-          </a>
         </div>
       </div>
 
       <section className="space-y-8">
-        {["その他", ...jpLetters].map((letter) => (
+        {jpLetters.map((letter) => (
           <div key={`jp-${letter}`} id={`jp-${letter}`}>
             <h2 className="font-semibold text-lg mb-3">[{letter}]</h2>
             <ul className="space-y-2">
@@ -114,7 +132,7 @@ export default function KeywordsPage({ topics }: { topics: TopicMeta[] }) {
           </div>
         ))}
 
-        {["Others", ...enLetters].map((letter) => (
+        {enLetters.map((letter) => (
           <div key={`en-${letter}`} id={`en-${letter}`}>
             <h2 className="font-semibold text-lg mb-3">[{letter}]</h2>
             <ul className="space-y-2">

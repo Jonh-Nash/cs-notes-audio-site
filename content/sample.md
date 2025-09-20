@@ -12,7 +12,7 @@ categories:
     "Scalability/Performance/Reliability",
     "Misc",
   ]
-keywords: ["自由に決める", "牽引ページで出てくる"]
+keywords: ["冪等性", "データベース", "その他"]
 audio:
   - "/audio/sample/sample_1.mp3"
   - "/audio/sample/sample_2.mp3"
