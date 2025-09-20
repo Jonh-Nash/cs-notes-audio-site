@@ -1,6 +1,7 @@
 import fs from "fs";
 import path from "path";
 import Layout from "@/components/Layout";
+import ScrollToTopButton from "@/components/ScrollToTopButton";
 import { initialCategory } from "@/lib/utils";
 
 type TopicMeta = {
@@ -51,7 +52,10 @@ export default function KeywordsPage({ topics }: { topics: TopicMeta[] }) {
     <Layout title="索引">
       <h1 className="text-xl font-semibold mb-4">索引（Keywords）</h1>
 
-      <div className="sticky top-0 z-10 bg-white/70 dark:bg-gray-900/70 backdrop-blur border-y py-2 mb-4">
+      <div
+        id="character-navigation"
+        className="sticky top-0 z-10 bg-white/90 dark:bg-gray-900/90 backdrop-blur border-y py-2 mb-4 keyboard-safe-area"
+      >
         <div className="text-sm mb-1">日本語</div>
         <div className="flex flex-wrap gap-2">
           {jpLetters.map((l) => (
@@ -135,6 +139,12 @@ export default function KeywordsPage({ topics }: { topics: TopicMeta[] }) {
           </div>
         ))}
       </section>
+
+      <ScrollToTopButton
+        targetSelector="#character-navigation"
+        showAfterScroll={300}
+        buttonText="↑"
+      />
     </Layout>
   );
 }

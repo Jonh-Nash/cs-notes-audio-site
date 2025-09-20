@@ -13,13 +13,16 @@ export default function Layout({
   const site = "CS Notes";
   const pageTitle = title ? `${title} | ${site}` : site;
   return (
-    <div className="min-h-screen pb-16">
+    <div className="flex flex-col min-h-screen">
       <Head>
         <title>{pageTitle}</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta
+          name="viewport"
+          content="width=device-width, initial-scale=1, interactive-widget=resizes-visual"
+        />
         <meta name="robots" content="noindex, nofollow, noarchive" />
       </Head>
-      <header className="border-b border-gray-200 dark:border-gray-800">
+      <header className="border-b border-gray-200 dark:border-gray-800 flex-shrink-0">
         <div className="mx-auto max-w-4xl px-3 py-3 flex items-center justify-between">
           <Link href="/" className="font-semibold">
             CS Notes
@@ -31,7 +34,9 @@ export default function Layout({
           </nav>
         </div>
       </header>
-      <main className="mx-auto max-w-4xl px-3 py-6">{children}</main>
+      <main className="flex-1 mx-auto max-w-4xl w-full px-3 py-6 container-content">
+        {children}
+      </main>
       <GlobalAudioPlayer />
     </div>
   );

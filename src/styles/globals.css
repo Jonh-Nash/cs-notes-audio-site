@@ -2,7 +2,135 @@
 @tailwind components;
 @tailwind utilities;
 
-html, body, #__next { height: 100%; }
-:root { color-scheme: light dark; }
+html,
+body,
+#__next {
+  height: 100%;
+}
+:root {
+  color-scheme: light dark;
+}
 
-.prose { line-height: 1.8; }
+.prose {
+  line-height: 1.8;
+}
+
+/* 仮想キーボード対応のスタイル */
+.container-content {
+  /* viewport-fitとsafe-areaを考慮 */
+  min-height: 0;
+  overflow-y: auto;
+}
+
+/* 仮想キーボード表示時の調整 */
+@supports (height: 100dvh) {
+  html,
+  body,
+  #__next {
+    height: 100dvh;
+  }
+}
+
+/* iOSサファリでの仮想キーボード対応 */
+@supports (-webkit-touch-callout: none) {
+  .container-content {
+    padding-bottom: env(keyboard-inset-height, 0px);
+  }
+}
+
+/* 一般的な仮想キーボード表示時の対応 */
+@media (max-height: 500px) and (orientation: landscape) {
+  .container-content {
+    padding-bottom: 2rem;
+  }
+}
+
+/* キーボードセーフエリア対応 */
+.keyboard-safe-area {
+  /* 仮想キーボード表示時でも見えるよう背景を強化 */
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+/* スクロール時の見やすさ向上 */
+@media (max-height: 600px) {
+  .keyboard-safe-area {
+    position: fixed;
+    width: 100%;
+    max-width: 56rem; /* max-w-4xl相当 */
+    left: 50%;
+    transform: translateX(-50%);
+    margin: 0 0.75rem; /* px-3相当 */
+  }
+}
+
+/* スクロールトップボタンのスタイル調整 */
+.scroll-to-top-button {
+  /* GlobalAudioPlayerとの重複を避ける */
+  bottom: 5rem; /* 80px */
+  right: 1rem; /* 16px */
+  z-index: 40;
+
+  /* モダンなダークデザイン */
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  /* アニメーション効果 */
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* ダークテーマに合うシャドウ */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4), 0 2px 4px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.scroll-to-top-button:hover {
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5), 0 4px 8px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  transform: translateY(-2px);
+  border-color: rgba(156, 163, 175, 0.7);
+}
+
+.scroll-to-top-button:active {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3), 0 1px 2px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+/* モバイルでのタッチ対応 */
+@media (max-width: 768px) {
+  .scroll-to-top-button {
+    bottom: 6rem; /* 96px - モバイルでは少し上に */
+    right: 0.75rem; /* 12px */
+    width: 44px;
+    height: 44px;
+    font-size: 1rem;
+  }
+}
+
+/* 小さい画面での調整 */
+@media (max-width: 480px) {
+  .scroll-to-top-button {
+    bottom: 6.5rem; /* 104px */
+    right: 0.5rem; /* 8px */
+    width: 40px;
+    height: 40px;
+    font-size: 0.9rem;
+  }
+}
+
+/* ダークモード専用スタイル */
+@media (prefers-color-scheme: dark) {
+  .scroll-to-top-button {
+    background: rgba(17, 24, 39, 0.9);
+    border-color: rgba(75, 85, 99, 0.6);
+  }
+
+  .scroll-to-top-button:hover {
+    background: rgba(17, 24, 39, 0.95);
+    border-color: rgba(107, 114, 128, 0.8);
+  }
+}
